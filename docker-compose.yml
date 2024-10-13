@@ -1,0 +1,11 @@
+services:
+  html-template-postgres:
+    image: "postgres"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=root      
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./migrations/docker-database-initial.sql:/docker-entrypoint-initdb.d/docker-database-initial.sql
