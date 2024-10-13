@@ -11,4 +11,6 @@ func RequestHandler() {
 	http.HandleFunc("/new", controllers.ProductsNew)
 	http.HandleFunc("/insert", controllers.ProductsInsert)
 	http.HandleFunc("/delete", controllers.ProductsDelete)
+	http.HandleFunc("/edit", controllers.ProductEdit)
+	http.HandleFunc("/update", controllers.ProductUpdate)
 }

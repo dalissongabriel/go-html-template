@@ -18,7 +18,7 @@ func FindAllProducts() []Product {
 	var product Product
 	var products []Product
 
-	sqlFindAllProducts, err := db.Query("SELECT * from products")
+	sqlFindAllProducts, err := db.Query("SELECT * FROM products ORDER BY id")
 
 	if err != nil {
 		panic(err.Error())
@@ -48,10 +48,29 @@ func FindAllProducts() []Product {
 	return products
 }
 
+func FindOneProduct(productId int) Product {
+	db := database.ConnDatabase()
+
+	var product Product
+
+	sqlFindProductById, err := db.Query("SELECT * FROM products WHERE id = $1", productId)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for sqlFindProductById.Next() {
+		sqlFindProductById.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.Amount)
+	}
+
+	defer db.Close()
+	return product
+}
+
 func InsertProduct(name, description string, price float64, amount int) {
 	db := database.ConnDatabase()
 
-	sqlInsertProducts, err := db.Prepare("insert into products(name, description, price, amount) values ($1, $2, $3, $4)")
+	sqlInsertProducts, err := db.Prepare("INSERT INTO products(name, description, price, amount) VALUES ($1, $2, $3, $4)")
 
 	if err != nil {
 		panic(err.Error())
@@ -62,10 +81,28 @@ func InsertProduct(name, description string, price float64, amount int) {
 	defer db.Close()
 }
 
+func UpdateProduct(name, description string, price float64, amount int, id int) {
+	db := database.ConnDatabase()
+
+	sqlUpdateProduct, err := db.Prepare("UPDATE products SET name = $1, description = $2, price = $3, amount = $4 WHERE id = $5")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, errA := sqlUpdateProduct.Exec(name, description, price, amount, id)
+
+	if errA != nil {
+		panic(errA.Error())
+	}
+
+	defer db.Close()
+}
+
 func DeleteProduct(id int) {
 	db := database.ConnDatabase()
 
-	sqlDeleteProduct, err := db.Prepare("delete from products where id = $1")
+	sqlDeleteProduct, err := db.Prepare("DELETE FROM products WHERE id = $1")
 
 	if err != nil {
 		panic(err.Error())
